@@ -1,0 +1,353 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  background: #0b0c10;
+  color: #f7f7f7;
+}
+
+body[data-view="overlay"] {
+  background: transparent;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: transparent;
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 120ms ease-in;
+  pointer-events: none;
+}
+
+.overlay.active {
+  opacity: 1;
+}
+
+.overlay-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.settings {
+  max-width: 420px;
+  margin: 32px auto;
+  padding: 24px;
+  background: #14161d;
+  border-radius: 16px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+}
+
+.settings-header h1 {
+  margin: 0 0 8px;
+  font-size: 28px;
+}
+
+.settings-header p {
+  margin: 0 0 24px;
+  color: #b6b9c6;
+}
+
+.settings-section {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.settings-label {
+  font-size: 14px;
+  color: #c7cad6;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.settings-hint {
+  font-size: 12px;
+  color: #8b90a1;
+}
+
+input[type="number"] {
+  width: 140px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #2a2f3b;
+  background: #101218;
+  color: inherit;
+}
+
+/* PSU Rocker Switch */
+.psu-switch {
+  position: relative;
+  display: inline-block;
+  width: 64px;
+  height: 36px;
+  cursor: pointer;
+}
+
+.psu-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.psu-switch-inner {
+  position: absolute;
+  inset: 0;
+  background: #1a1d23;
+  border: 2px solid #2a2f3b;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+  font-family: "Courier New", Courier, monospace;
+  font-weight: bold;
+  overflow: hidden;
+}
+
+.psu-switch-i,
+.psu-switch-o {
+  font-size: 16px;
+  color: #3e4a5e;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.psu-switch-inner::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(145deg, #2a2f3b, #1a1d23);
+  border-radius: 2px;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  z-index: 2;
+}
+
+.psu-switch input:checked + .psu-switch-inner {
+  border-color: #ff3e3e;
+  box-shadow: inset 0 0 10px rgba(255, 62, 62, 0.2), 0 0 15px rgba(255, 62, 62, 0.1);
+}
+
+.psu-switch input:checked + .psu-switch-inner .psu-switch-i {
+  color: #ff3e3e;
+  text-shadow: 0 0 8px rgba(255, 62, 62, 0.6);
+}
+
+.psu-switch input:not(:checked) + .psu-switch-inner .psu-switch-o {
+  color: #8b90a1;
+}
+
+.psu-switch input:checked + .psu-switch-inner::after {
+  transform: translateX(28px);
+  background: linear-gradient(145deg, #3a3f4b, #2a2f3b);
+}
+
+.psu-switch:hover .psu-switch-inner {
+  border-color: #3e4a5e;
+}
+
+.psu-switch input:checked:hover + .psu-switch-inner {
+  border-color: #ff5e5e;
+}
+
+.settings-footer {
+  font-size: 12px;
+  color: #8b90a1;
+  margin-top: 12px;
+}
+
+.test-button {
+  padding: 10px;
+  background: #3e4a5e;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.test-button:hover {
+  background: #4e5d75;
+}
+
+.settings-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.debug-button {
+  padding: 10px;
+  background: transparent;
+  color: #8b90a1;
+  border: 1px solid #2a2f3b;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.debug-button:hover {
+  background: #2a2f3b;
+  color: #f7f7f7;
+}
+
+/* Debug View Styles */
+.debug-view {
+  padding: 20px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #0b0c10;
+  color: #e1e1e1;
+  font-family: "Consolas", "Monaco", monospace;
+}
+
+.debug-header {
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #2a2f3b;
+}
+
+.debug-header h1 {
+  margin: 0 0 15px;
+  font-size: 20px;
+  color: #4e5d75;
+}
+
+.debug-status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 15px;
+}
+
+.debug-status-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.debug-status-item .label {
+  font-size: 11px;
+  color: #8b90a1;
+  text-transform: uppercase;
+}
+
+.debug-status-item .value {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.debug-status-item .value.on {
+  color: #4caf50;
+}
+.debug-status-item .value.off {
+  color: #f44336;
+}
+
+.debug-logs {
+  flex: 1;
+  overflow-y: auto;
+  background: #050505;
+  border: 1px solid #2a2f3b;
+  border-radius: 4px;
+}
+
+.debug-logs table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.debug-logs th {
+  text-align: left;
+  padding: 8px;
+  background: #14161d;
+  color: #8b90a1;
+  position: sticky;
+  top: 0;
+  border-bottom: 1px solid #2a2f3b;
+}
+
+.debug-logs td {
+  padding: 6px 8px;
+  vertical-align: top;
+  border-bottom: 1px solid #1a1d24;
+}
+
+.log-row.type-error {
+  background: rgba(244, 67, 54, 0.1);
+  color: #ff8a80;
+}
+.log-row.type-trigger {
+  background: rgba(76, 175, 80, 0.1);
+  color: #b9f6ca;
+}
+.log-row.type-warn {
+  color: #ffd180;
+}
+
+.log-row.type-tick {
+  color: #444;
+}
+
+.log-row.type-tick .log-data {
+  display: none;
+}
+
+.log-row.type-tick:hover .log-data {
+  display: block;
+}
+
+.time {
+  white-space: nowrap;
+  color: #555;
+  width: 80px;
+}
+
+.type {
+  font-weight: bold;
+  width: 80px;
+}
+
+.log-data {
+  margin: 5px 0 0;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  font-size: 11px;
+  color: #888;
+  overflow-x: auto;
+}
+
+.debug-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  color: #8b90a1;
+}
