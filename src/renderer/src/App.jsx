@@ -192,6 +192,9 @@ const SettingsView = () => {
   }, [settings.chanceDenominator]);
 
   const updateSettings = (next) => {
+// #region agent log
+fetch('http://127.0.0.1:7249/ingest/8913b1dc-d761-45c4-880a-20be5551005c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'App.jsx:195',message:'updateSettings called in renderer',data:{next},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
+// #endregion
     setSettings(next);
     setStatus("Saving...");
     window.jumpscareSettings

@@ -9,7 +9,20 @@ const {
   shell,
 } = require("electron");
 
-const JUMPSCARE_INTERVAL_MS = 1000;
+const gotTheLock = app.requestSingleInstanceLock();
+
+if (!gotTheLock) {
+  app.quit();
+} else {
+  app.on("second-instance", (event, commandLine, workingDirectory) => {
+    // Someone tried to run a second instance, we should focus our window.
+    if (settingsWindow) {
+      if (settingsWindow.isMinimized()) settingsWindow.restore();
+      settingsWindow.focus();
+    }
+  });
+
+  const JUMPSCARE_INTERVAL_MS = 1000;
 const DEFAULT_SETTINGS = {
   chanceDenominator: 10000,
   durationMs: 2000,
@@ -19,6 +32,9 @@ const DEFAULT_SETTINGS = {
 const overlayWindows = new Map();
 let jumpscareActive = false;
 let jumpscareEnabled = true;
+// #region agent log
+fetch('http://127.0.0.1:7249/ingest/8913b1dc-d761-45c4-880a-20be5551005c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'main/index.js:22',message:'jumpscareEnabled initialized',data:{jumpscareEnabled},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'initial'})}).catch(()=>{});
+// #endregion
 let settingsWindow = null;
 let debugWindow = null;
 const settings = { ...DEFAULT_SETTINGS };
@@ -180,6 +196,7 @@ const createSettingsWindow = () => {
 
   settingsWindow.on("closed", () => {
     settingsWindow = null;
+    app.quit();
   });
 };
 
@@ -216,6 +233,9 @@ const createDebugWindow = () => {
 };
 
 const triggerJumpscare = (force = false) => {
+// #region agent log
+fetch('http://127.0.0.1:7249/ingest/8913b1dc-d761-45c4-880a-20be5551005c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'main/index.js:218',message:'triggerJumpscare called',data:{force,jumpscareEnabled,jumpscareActive},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
+// #endregion
   if ((!jumpscareEnabled && !force) || jumpscareActive) {
     logToDebug("info", "Trigger blocked", {
       jumpscareEnabled,
@@ -246,6 +266,9 @@ const triggerJumpscare = (force = false) => {
 
 const startJumpscareTimer = () => {
   setInterval(() => {
+// #region agent log
+fetch('http://127.0.0.1:7249/ingest/8913b1dc-d761-45c4-880a-20be5551005c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'main/index.js:248',message:'Timer tick',data:{jumpscareEnabled},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(()=>{});
+// #endregion
     if (!jumpscareEnabled) {
       return;
     }
@@ -257,7 +280,7 @@ const startJumpscareTimer = () => {
       logToDebug("info", "Roll success", { roll, chance });
       triggerJumpscare();
     } else {
-      logToDebug("tick", "Periodic roll check", { roll, chance });
+      // Periodic roll check - disabled to avoid log flooding
     }
   }, JUMPSCARE_INTERVAL_MS);
 };
@@ -274,6 +297,9 @@ app.whenReady().then(() => {
 
   globalShortcut.register("Control+Shift+J", () => {
     jumpscareEnabled = !jumpscareEnabled;
+// #region agent log
+fetch('http://127.0.0.1:7249/ingest/8913b1dc-d761-45c4-880a-20be5551005c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'main/index.js:277',message:'Shortcut toggled jumpscareEnabled',data:{jumpscareEnabled},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H3'})}).catch(()=>{});
+// #endregion
     logToDebug("info", `Jumpscare status changed: ${jumpscareEnabled}`);
   });
 
@@ -288,6 +314,9 @@ ipcMain.on("jumpscare:complete", () => {
 });
 
 ipcMain.on("jumpscare:test", () => {
+// #region agent log
+fetch('http://127.0.0.1:7249/ingest/8913b1dc-d761-45c4-880a-20be5551005c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'main/index.js:290',message:'Manual test trigger received',timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H5'})}).catch(()=>{});
+// #endregion
   logToDebug("info", "Manual test trigger");
   triggerJumpscare(true);
 });
@@ -311,6 +340,9 @@ ipcMain.handle("debug:get-status", () => ({
 
 ipcMain.handle("settings:get", () => ({ ...settings, enabled: jumpscareEnabled }));
 ipcMain.handle("settings:update", (_event, updates) => {
+// #region agent log
+fetch('http://127.0.0.1:7249/ingest/8913b1dc-d761-45c4-880a-20be5551005c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'main/index.js:313',message:'settings:update called',data:{updates},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
+// #endregion
   if (typeof updates?.chanceDenominator === "number") {
     settings.chanceDenominator = Math.max(1, Math.round(updates.chanceDenominator));
   }
@@ -322,6 +354,9 @@ ipcMain.handle("settings:update", (_event, updates) => {
   }
   if (typeof updates?.enabled === "boolean") {
     jumpscareEnabled = updates.enabled;
+// #region agent log
+fetch('http://127.0.0.1:7249/ingest/8913b1dc-d761-45c4-880a-20be5551005c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'main/index.js:325',message:'jumpscareEnabled updated',data:{jumpscareEnabled},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
+// #endregion
   }
 
   return { ...settings, enabled: jumpscareEnabled };
@@ -331,3 +366,4 @@ app.on("window-all-closed", () => {
   globalShortcut.unregisterAll();
   app.quit();
 });
+}
