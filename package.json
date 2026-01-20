@@ -1,6 +1,10 @@
 {
   "name": "scarify",
-  "version": "1.0.0",
+  "version": "1.0.2",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Derpedyea/scarify.git"
+  },
   "main": "dist/main/index.js",
   "scripts": {
     "dev": "electron-vite dev",
@@ -29,6 +33,11 @@
           ]
         }
       ]
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "Derpedyea",
+      "repo": "scarify"
     }
   },
   "keywords": [],
